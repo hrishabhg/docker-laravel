@@ -1,0 +1,84 @@
+version: "3.8"
+
+networks:
+  laravel:
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: '${APP_NAME}-nginx'
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    working_dir: /var/www/html/
+    volumes:
+      - ./src:/var/www/html
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - laravel
+    depends_on:
+      - php
+      - mysql
+
+  php:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: ${APP_NAME}
+    container_name: '${APP_NAME}-php'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    working_dir: /var/www/html/
+    volumes:
+      - ./src:/var/www/html
+      - ./docker-compose/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    networks:
+      - laravel
+
+  mysql:
+    image: mysql:8.0.25
+    container_name: '${APP_NAME}-mysql'
+    restart: unless-stopped
+    ports:
+      - 6603:3306
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - db_data:/var/lib/mysql
+    working_dir: /var/www/html/
+    networks:
+      - laravel
+
+  composer:
+    image: composer:latest
+    container_name: composer
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - php
+    networks:
+      - laravel
+
+  artisan:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: artisan
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - mysql
+    working_dir: /var/www/html
+    entrypoint: ['/var/www/html/artisan']
+    networks:
+      - laravel
+
+volumes:
+  db_data:
