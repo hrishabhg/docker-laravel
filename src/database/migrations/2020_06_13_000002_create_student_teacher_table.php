@@ -19,7 +19,6 @@ class CreateStudentTeacherTable extends Migration
             $table->foreignId('teacher_id')->constrained();
             $table->unique(['student_id', 'teacher_id']);
             $table->boolean('star')->default(false);
-            $table->timestamps();
         });
     }
 
