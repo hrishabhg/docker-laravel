@@ -9,11 +9,12 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-<div height="100px" class="text-center">
-    <h2>Teachers</h2>
+<div height="100px" class="jumbotron text-center">
+    <h2 >Teachers</h2>
 </div>
 
 <div class="container">
+    <a class="btn btn-info" href="{{route('students.index')}}">Students</a>
     @yield('content')
 </div>
 
