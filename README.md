@@ -10,3 +10,4 @@ sudo chown -R www-data:www-data src/storage/
 
 docker-compose run --rm artisan migrate
 
+open http://localhost:8000/ in your web browser
