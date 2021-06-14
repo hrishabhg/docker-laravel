@@ -26,9 +26,9 @@ class TeacherController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'email' => 'required',
-            'mobile' => 'required',
+            'name' => 'required|max:100',
+            'email' => 'required|email|unique:teachers|max:100',
+            'mobile' => 'required|max:20',
         ]);
 
         Teacher::create($request->all());
@@ -45,10 +45,14 @@ class TeacherController extends Controller
     public function update(Request $request, Teacher $teacher)
     {
         $request->validate([
-            'name' => 'required',
-            'email' => 'required',
-            'mobile' => 'required',
+            'name' => 'required|max:100',
+            'mobile' => 'required|max:20',
         ]);
+        if(isset($request->email) && $teacher->email != $request->email){
+            $request->validate([
+                'email' => 'required|email|unique:teachers|max:100',
+            ]);
+        }
 
         $teacher->update($request->all());
 
