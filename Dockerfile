@@ -19,8 +19,6 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 #Install xdebug
 RUN pecl install xdebug-3.0.4 && docker-php-ext-enable xdebug
 
-#set laravel storage ownership
-RUN chown -R www-data:www-data /var/www/html/storage/
 
 # Set working directory
 WORKDIR /var/www
