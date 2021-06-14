@@ -58,6 +58,7 @@ class TeacherController extends Controller
 
     public function destroy(Teacher $teacher)
     {
+        $teacher->students()->detach();
         $teacher->delete();
 
         return redirect()->route('teachers.index')
@@ -67,26 +68,69 @@ class TeacherController extends Controller
     public function students(int $teacherId)
     {
         $teacher = Teacher::find($teacherId);
+        if(empty($teacher)){
+            return response()->view('errors.' . '404', [], 404);
+        }
+
         $students = $teacher->students()->paginate($this->pageSize);
+
         return view('teachers.students',compact('students','teacher'))
             ->with('i', (request()->input('page', 1) - 1) * $this->pageSize);
     }
 
     public function addStudents(int $teacherId)
     {
-        $students = Student::join('student_teacher', 'students.id', '=', 'student_teacher.student_id')
-            ->where('teacher_id', '!=', $teacherId)->paginate($this->pageSize);
-        return view('teachers.addstudents',compact('students'))
+        $teacher = Teacher::find($teacherId);
+        if(empty($teacher)){
+            return response()->view('errors.' . '404', [], 404);
+        }
+
+        $students = Student::whereNotIn('id', function ($query) use ($teacherId){
+            $query->select('student_id')->from('student_teacher')->where('teacher_id','=', $teacherId);
+        })->paginate($this->pageSize);
+
+        return view('teachers.add_students',compact('students','teacher'))
             ->with('i', (request()->input('page', 1) - 1) * $this->pageSize);
     }
 
-    public function markStar($teacherId, $studentId)
+    public function markStar(Request $request, $teacherId, $studentId)
     {
+        $teacher = Teacher::find($teacherId);
+        if(empty($teacher)){
+            return response()->view('errors.' . '404', [], 404);
+        }
 
+        $teacher->students()->updateExistingPivot($studentId, ['star' => $request->all()['star']]);
+
+        $message = $request->all()['star'] ? "added" : "removed";
+        return redirect()->route('teachers.students', $teacherId)
+            ->with('success',"Star $message successfully");
     }
 
-    public function removeStudent($teacherId, $studentId)
+    public function attachStudent($teacherId, $studentId)
     {
+        $teacher = Teacher::find($teacherId);
+        $student = Student::find($studentId);
+        if(empty($teacher) || empty($student)){
+            return response()->view('errors.' . '404', [], 404);
+        }
 
+        $teacher->students()->attach($student);
+
+        return redirect()->route('teachers.students', $teacherId)
+            ->with('success',"Student added successfully");    }
+
+    public function detachStudent($teacherId, $studentId)
+    {
+        $teacher = Teacher::find($teacherId);
+        $student = Student::find($studentId);
+        if(empty($teacher) || empty($student)){
+            return response()->view('errors.' . '404', [], 404);
+        }
+
+        $teacher->students()->detach($student);
+
+        return redirect()->route('teachers.students', $teacherId)
+            ->with('success',"Student removed successfully");
     }
 }

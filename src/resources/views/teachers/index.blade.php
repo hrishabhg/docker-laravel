@@ -3,8 +3,8 @@
 @section('content')
     <div class="row">
         <div class="col-lg-12 margin-tb">
-            <div class="float-right">
-                <a class="btn btn-secondary" href="{{ route('teachers.create') }}">add</a>
+            <div class="pull-right">
+                <a class="btn btn-default" href="{{ route('teachers.create') }}">Add</a>
             </div>
         </div>
     </div>
@@ -35,8 +35,8 @@
                 <td>
                     <form action="{{ route('teachers.destroy',$teacher->id) }}" method="POST">
 
-                        <a class="btn btn-secondary" href="{{ route('teachers.edit',$teacher->id) }}">Edit</a>
-                        <a class="btn btn-secondary" href="{{ route('teachers.students',$teacher->id) }}">Students</a>
+                        <a class="btn btn-default" href="{{ route('teachers.edit',$teacher->id) }}">Edit</a>
+                        <a class="btn btn-default" href="{{ route('teachers.students',$teacher->id) }}">Students</a>
 
                         @csrf
                         @method('DELETE')
