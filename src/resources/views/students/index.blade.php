@@ -1,14 +1,10 @@
-@extends('teachers.layout')
+@extends('students.layout')
 
 @section('content')
     <div class="row">
         <div class="col-lg-12 margin-tb">
-            <div class="pull-left">
-                <h2>Other Students</h2>
-            </div>
             <div class="pull-right">
-                <a class="btn btn-primary" href="{{ route('teachers.students', $teacher->id) }}"> Back</a>
-                <a class="btn btn-default" href="{{ route('students.index', $teacher->id) }}">Create</a>
+                <a class="btn btn-default" href="{{ route('students.create') }}">Add</a>
             </div>
         </div>
     </div>
@@ -21,13 +17,13 @@
 
     <table class="table">
         <thead>
-        <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Grade</th>
-            <th width="250px">Action</th>
-        </tr>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Grade</th>
+                <th width="250px">Action</th>
+            </tr>
         </thead>
         <tbody>
         @foreach ($students as $student)
@@ -37,13 +33,14 @@
                 <td>{{ $student->email }}</td>
                 <td>{{ $student->grade }}</td>
                 <td>
-                    <form action="{{ route('teachers.attachStudent',[$teacher->id,$student->id]) }}" method="POST">
+                    <form action="{{ route('students.destroy',$student->id) }}" method="POST">
 
+                        <a class="btn btn-default" href="{{ route('students.edit',$student->id) }}">Edit</a>
 
                         @csrf
-                        @method('PUT')
+                        @method('DELETE')
 
-                        <button type="submit" class="btn btn-success">Add</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
                 </td>
             </tr>

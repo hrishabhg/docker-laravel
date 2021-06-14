@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/teachers');
 });
 
 Route::resource('teachers', '\App\Http\Controllers\TeacherController');
@@ -23,3 +23,5 @@ Route::get('teachers/{id}/add-students', [\App\Http\Controllers\TeacherControlle
 Route::put('teachers/{teacherId}/attach-student/{studentId}', [\App\Http\Controllers\TeacherController::class, 'attachStudent'])->name('teachers.attachStudent');
 Route::delete('teachers/{teacherId}/detach-student/{studentId}', [\App\Http\Controllers\TeacherController::class, 'detachStudent'])->name('teachers.detachStudent');
 Route::put('teachers/{teacherId}/mark-star/{studentId}', [\App\Http\Controllers\TeacherController::class, 'markStar'])->name('teachers.markStar');
+
+Route::resource('students', '\App\Http\Controllers\StudentController');
